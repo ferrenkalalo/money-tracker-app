@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   text3: color => ({
     fontSize: 16,
     fontFamily: 'Poppins-Black',
-    // color: '#D9435E',
     color: color,
   }),
 });

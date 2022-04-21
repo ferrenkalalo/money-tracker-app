@@ -1,9 +1,34 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import React, {useState} from 'react';
 import {Button, Header, TextInput} from '../../components';
 import Gap from '../../components/atoms/Gap';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {showMessage} from 'react-native-flash-message';
 
 const SignUp = ({navigation}) => {
+  const [photo, setPhoto] = useState('');
+  const [hasPhoto, setHasPhoto] = useState(false);
+
+  const getPhoto = async () => {
+    const result = await launchImageLibrary({
+      maxWidth: 200,
+      maxHeight: 200,
+      includeBase64: true,
+    });
+    if (result.didCancel) {
+      setHasPhoto(false);
+      showMessage({
+        message: 'Upload foto dibatalkan',
+        type: 'default',
+        backgroundColor: '#D9435E',
+        color: 'white',
+      });
+    } else {
+      setPhoto(result.assets[0].uri);
+      setHasPhoto(true);
+    }
+  };
+
   return (
     <View style={styles.page}>
       <Header
@@ -15,9 +40,16 @@ const SignUp = ({navigation}) => {
       <View style={styles.contentWrapper}>
         <View style={styles.avatarWrapper}>
           <View style={styles.border}>
-            <View style={styles.addPhoto}>
-              <Text style={styles.addPhotoText}>Add Photo</Text>
-            </View>
+            <TouchableOpacity onPress={getPhoto} activeOpacity={0.7}>
+              {!hasPhoto && (
+                <View style={styles.addPhoto}>
+                  <Text style={styles.addPhotoText}>Add Photo</Text>
+                </View>
+              )}
+              {hasPhoto && (
+                <Image source={{uri: photo}} style={styles.avatar} />
+              )}
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -57,6 +89,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F0F0F0',
+    borderRadius: 90,
+  },
+  avatar: {
+    height: 90,
+    width: 90,
     borderRadius: 90,
   },
   addPhotoText: {
